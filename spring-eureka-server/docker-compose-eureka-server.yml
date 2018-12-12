@@ -1,0 +1,67 @@
+version: '2.1'
+services:
+  eureka-server:
+    image: pavitrashalki/spring-eureka-server:1.0.0
+    ports:
+      - "8761:8761"
+   
+  expense-claim-details-module-gateway:
+    image: pavitrashalki/expense-claim-details-module:0.0.1-SNAPSHOT
+    ports:
+      - "8888:8888"
+    environment:
+      SPRING_APPLICATION_NAME: expense-claim-details-module-gateway
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    links:
+      - "eureka-server"
+      
+  ecm:
+    image: pavitrashalki/expense-code-module:0.0.1-SNAPSHOT
+    ports:
+      - "8102:8102"
+    environment:
+      SPRING_APPLICATION_NAME: ecm
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    links:
+      - "eureka-server"
+     
+  employee:
+    image: pavitrashalki/employee-code-module:0.0.1-SNAPSHOT
+    ports:
+      - "9000:9000"
+    environment:
+      SPRING_APPLICATION_NAME: employee
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    links:
+      - "eureka-server"
+	  - "mongodb:mongo"
+  mongodb:
+    image: mongo
+    container_name: mongo
+    ports:
+        - 27017
+    hostname: mongo
+    volumes:
+        - $HOME/mongo/data/db:/data/db
+      
+  pcm:
+    image: pavitrashalki/project-code-module:0.0.1-SNAPSHOT
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_APPLICATION_NAME: pcm
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    links:
+      - "eureka-server"
+volumes:
+  installation:
+     external: false
+     
+
+     
+     
+     
